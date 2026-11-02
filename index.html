@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lisa Beauty · Nail Beauty · Portugal</title>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18205632597"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  // 'allow_enhanced_conversions' MUST be true for Enhanced Conversions (Step 3)
+  gtag('config', 'AW-18205632597', { 'allow_enhanced_conversions': true });
+</script>
+
+<!-- Event snippet for "Book appointment (2)" now lives on obrigado.html
+     (thank-you page). It was firing here on every homepage load before,
+     which counted every visitor as a conversion — moved so it only
+     fires when someone actually finishes the WhatsApp booking form. -->
+
+<!-- ============================================================
+     LISA BEAUTY - GOOGLE ADS CONVERSION TRACKING (v2)
+     1) gtag_report_conversion : fires click conversions safely (beacon)
+     2) Enhanced Conversions   : SHA-256 hashed email/phone (Step 3)
+     3) Booking widget listener: redirects to thank-you page (Step 1)
+     ============================================================ -->
+<script>
+/* ----------------------------------------------------------
+   1) CLICK CONVERSIONS (WhatsApp buttons)
+   FIX: the old version used event_callback + window.location,
+   which navigated the CURRENT tab even though the link already
+   opened WhatsApp in a NEW tab (target="_blank"). Result:
+   WhatsApp opened twice and hits were sometimes lost.
+   'transport_type: beacon' guarantees the hit is delivered
+   even if the browser navigates away immediately (fixes
+   "conversion loss" on iPhone/Safari).
+   ---------------------------------------------------------- */
+function gtag_report_conversion(url) {
+  // Conversion 1: WhatsApp button click
+  gtag('event', 'conversion', {
+    'send_to': 'AW-18205632597/nLTXCN_f57kcENXQj-1D',
+    'transport_type': 'beacon'
+  });
+  // Conversion 2: Contact (1)
+  gtag('event', 'conversion', {
+    'send_to': 'AW-18205632597/2NX9CL6IxbocENXQj-lD',
+    'value': 1.0,
+    'currency': 'EUR',
+    'transport_type': 'beacon'
+  });
+  return true; // let the link's default behavior open WhatsApp normally
+}
+
+/* ----------------------------------------------------------
+   2) ENHANCED CONVERSIONS HELPERS (Step 3)
+   Google requires data to be NORMALIZED then SHA-256 hashed:
+   - email : trim + lowercase
+   - phone : E.164 format (+351XXXXXXXXX) BEFORE hashing
+   - names : trim + lowercase
+   Hashing is done locally with the browser's Web Crypto API,
+   so raw personal data never leaves the page unhashed.
+   ---------------------------------------------------------- */
+async function lbSha256(value) {
+  const data = new TextEncoder().encode(value);
+  const digest = await crypto.subtle.digest('SHA-256', data);
+  return Array.from(new Uint8Array(digest))
+    .map(b => b.toString(16).padStart(2, '0'))
+    .join('');
+}
+
+function lbNormalizeEmail(email) {
+  return (email || '').trim().toLowerCase();
+}
+
+// Converts Portuguese phone inputs to E.164 (+351...) -> required by Google
+function lbNormalizePhone(phone) {
+  let digits = (phone || '').replace(/[^0-9+]/g, '');
+  if (digits.startsWith('00')) digits = '+' + digits.slice(2);   // 00351... -> +351...
+  if (!digits.startsWith('+')) {
+    if (digits.length === 9) digits = '+351' + digits;           // 9XXXXXXXX -> +3519XXXXXXXX
+    else if (digits.startsWith('351')) digits = '+' + digits;    // 351... -> +351...
+    else if (digits.length > 0) digits = '+' + digits;
+  }
+  return digits.length >= 10 ? digits : '';
+}
+
+/* Builds the hashed user_data object and gives it to gtag.
+   Returns the object so it can also be saved for the thank-you page. */
+async function lbSetEnhancedUserData(fields) {
+  const userData = {};
+  const email = lbNormalizeEmail(fields.email);
+  if (email && email.includes('@')) {
+    userData.sha256_email_address = await lbSha256(email);
+  }
+  const phone = lbNormalizePhone(fields.phone);
+  if (phone) {
+    userData.sha256_phone_number = await lbSha256(phone);
+  }
+  const name = (fields.name || '').trim().toLowerCase();
+  if (name) {
+    const parts = name.split(/\s+/);
+    userData.address = {
+      sha256_first_name: await lbSha256(parts[0]),
+      sha256_last_name: await lbSha256(parts[parts.length - 1]),
+      country: 'PT'
+    };
+  }
+  if (Object.keys(userData).length > 0) {
+    gtag('set', 'user_data', userData); // attaches hashed data to following events
+    try { // also save it for the thank-you page conversion (same tab)
+      sessionStorage.setItem('lb_user_data', JSON.stringify(userData));
+    } catch (e) {}
+  }
+  return userData;
+}
+
+</script>
+
+<meta name="description" content="Lisa Beauty — salão de unhas em Cascais e Algés. Manicure, pedicure, extensões de gel e acrílico, nail art e extensões de pestanas. Mostre a foto de inspiração e nós fazemos. Marque pelo WhatsApp: +351 936 693 839.">
+<link rel="canonical" href="index.html">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#0d0d0d">
+<meta name="geo.region" content="PT-11">
+<meta name="geo.placename" content="Cascais">
+
+<!-- Favicon (SVG inline - nao precisa de ficheiro extra) -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%230d0d0d'/%3E%3Ctext x='32' y='43' font-family='Georgia,serif' font-size='34' font-weight='bold' fill='%23c9a84c' text-anchor='middle'%3ELB%3C/text%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="og-image.html">
+
+<!-- Open Graph (WhatsApp / Facebook / Instagram) -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Lisa Beauty">
+<meta property="og:locale" content="pt_PT">
+<meta property="og:locale:alternate" content="en_GB">
+<meta property="og:url" content="index.html">
+<meta property="og:title" content="Lisa Beauty · Unhas em Cascais &amp; Algés">
+<meta property="og:description" content="Manicure, extensões de gel e acrílico, nail art e pestanas. Mostre a foto — e a magia acontece. Marque pelo WhatsApp.">
+<meta property="og:image" content="og-image.html">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Unhas feitas na Lisa Beauty, Cascais">
+
+<!-- Twitter / X -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Lisa Beauty · Unhas em Cascais &amp; Algés">
+<meta name="twitter:description" content="Manicure, extensões de gel e acrílico, nail art e pestanas. Mostre a foto — e a magia acontece.">
+<meta name="twitter:image" content="og-image.html">
+
+<!-- JSON-LD: NailSalon (Cascais + Algés) -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "NailSalon",
+      "@id": "https://lisabeautynails.net/#cascais",
+      "name": "Lisa Beauty Nail — Cascais",
+      "image": "https://lisabeautynails.net/og-image.jpg",
+      "url": "https://lisabeautynails.net/",
+      "telephone": "+351936693839",
+      "priceRange": "€€",
+      "currenciesAccepted": "EUR",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Rua Frederico Arouca 344B, 1º Andar",
+        "addressLocality": "Cascais",
+        "postalCode": "2750-352",
+        "addressCountry": "PT"
+      },
+      "geo": { "@type": "GeoCoordinates", "latitude": 38.6979, "longitude": -9.4215 },
+      "areaServed": ["Cascais", "Estoril", "Carcavelos", "Parede"],
+      "sameAs": [
+        "https://www.instagram.com/___lisa.beauty",
+        "https://www.facebook.com/share/1DHKusgs8n/"
+      ],
+      "hasMap": "https://maps.app.goo.gl/UG8kZFoNpPSi8kuB8",
+      "makesOffer": [
+        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Manicure Básica" }, "price": "18", "priceCurrency": "EUR" },
+        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Verniz Gel em Unhas Naturais" }, "price": "30", "priceCurrency": "EUR" },
+        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Extensão de Dual Form" }, "price": "33", "priceCurrency": "EUR" }
+      ]
+    },
+    {
+      "@type": "NailSalon",
+      "@id": "https://lisabeautynails.net/#alges",
+      "name": "Lisa Beauty Nail — Algés",
+      "image": "https://lisabeautynails.net/og-image.jpg",
+      "url": "https://lisabeautynails.net/",
+      "telephone": "+351936693839",
+      "priceRange": "€€",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Avenida da República 102, 2º Dto",
+        "addressLocality": "Algés",
+        "postalCode": "1495-109",
+        "addressCountry": "PT"
+      },
+      "areaServed": ["Algés", "Oeiras", "Belém", "Lisboa"],
+      "openingHoursSpecification": [
+        {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
+          "opens": "09:00", "closes": "12:00"
+        },
+        {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
+          "opens": "18:00", "closes": "20:00"
+        }
+      ]
+    }
+  ]
+}
+</script>
+
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&amp;family=Cinzel:wght@400;600;700&amp;family=Lato:wght@300;400&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+
+<!-- Meta Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'../connect.facebook.net/en_US/fbevents.js');
+fbq('init', '987047760923147');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=987047760923147&amp;ev=PageView&amp;noscript=1"
+/></noscript>
+<!-- End Meta Pixel Code -->
+</head>
+<body>
+<div data-include="partials/header.html"></div>
+<div data-include="partials/hero.html"></div>
+<div data-include="partials/about.html"></div>
+<div data-include="partials/services.html"></div>
+<div data-include="partials/gallery.html"></div>
+<div data-include="partials/feedback.html"></div>
+<div data-include="partials/reviews.html"></div>
+<div data-include="partials/booking.html"></div>
+<div data-include="partials/footer.html"></div>
+<script src="js/loader.js"></script>
+</body>
+</html>
